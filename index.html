@@ -10,7 +10,10 @@
     <!--https://github.com/lyswhut/lrc-file-parser-->
 
     <!--Preload audio file.-->
-    <audio id="audio" preload="auto" src="song.ogg"></audio>
+    <audio id="audio" preload="auto">
+        <source src="song.mp3" type="audio/mpeg">
+        <source src="song.ogg" type="audio/ogg">
+    </audio>
 
     <script>
         const animateCSS = (element, animation, prefix = 'animate__') =>
