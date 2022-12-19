@@ -43,30 +43,28 @@
                     console.log(line, text) // line is line number of current play
                     // text is lyric text of current play line
                     var lyrics = document.getElementById('lyrics');
-                    // First, get previous line id and set fadeOut
+                    // First, get previous line id and set fadeOut and moveUp
                     var prevLineNum = line - 1;
                     var prevLine = document.getElementById("lyric" + prevLineNum);
-                    console.log("lyric" + prevLineNum);
                     if (prevLine) {
                         prevLine.classList.remove('animate__fadeIn');
                         prevLine.classList.add('animate__animated', 'animate__fadeOut');
+                        prevLine.style.transform = "translate(-50%, -100%)";
                     }
+
                     // Second, append new line and set fadeIn
                     var newLine = document.createElement('p');
                     newLine.id = "lyric" + line;
                     newLine.innerHTML = text;
                     newLine.classList.add('animate__animated', 'animate__fadeIn');
+                    newLine.style.transform = "translate(-50%, -50%)";
                     lyrics.appendChild(newLine);
-                    // Third, make sure only 3 lines are displayed
-                    var lines = lyrics.getElementsByTagName('p');
-                    if (lines.length > 3) {
-                        lyrics.removeChild(lines[0]);
-                    }
+
                 },
                 onSetLyric: function (lines) { // listening lyrics seting event
                     console.log(lines) // lines is array of all lyric text
                 },
-                offset: 0, // offset time(ms), default is 150 ms
+                offset: 150, // offset time(ms), default is 150 ms
                 isRemoveBlankLine: false // is remove blank line, default is true
             })
             lrc.setLyric(xhr.responseText) // set lrc file content
@@ -81,7 +79,7 @@
 
 <body>
     <div id="lyrics">
-        <p id="lyric-1">Press to play.</p>
+        <p id="lyric-1" class="animate__animated animate__fadeIn">Press to play.</p>
     </div>
     <style>
         /** Put the lyric to the center of the page. */
@@ -98,6 +96,26 @@
             font-size: 2em;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        #lyrics p {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #lyrics p {
+            /* other styles */
+            transition: transform 1s ease-in-out;
+        }
+
+        #lyrics p {
+            /* other styles */
+            width: 500px;
+            /* adjust this value as needed */
+            white-space: nowrap;
+        }
+
 
         /** Black body background. */
         body {
@@ -130,14 +148,16 @@
 
         /** If ends, restore click event. */
         audio.onended = function () {
+            // clear lyrics
+            lyrics.innerHTML = "";
+            // put back the first line
+            var newLine = document.createElement('p');
+            newLine.id = "lyric-1";
+            newLine.innerHTML = "Press to play.";
+            newLine.classList.add('animate__animated', 'animate__fadeIn');
+            lyrics.appendChild(newLine);
+
             lyrics.onclick = function () {
-                // clear lyrics
-                lyrics.innerHTML = "";
-                // put back the first line
-                var newLine = document.createElement('p');
-                newLine.id = "lyric-1";
-                newLine.innerHTML = "Press to play.";
-                lyrics.appendChild(newLine);
                 // play song
                 playSong();
                 // Disable the click event.
