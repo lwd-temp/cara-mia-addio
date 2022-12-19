@@ -135,8 +135,16 @@
         var lyrics = document.getElementById('lyrics');
 
         function playSong() {
-            audio.play();
-            window.lrc.play(0);
+            // Check if the audio file is totally loaded.
+            if (audio.readyState === 4) {
+                // Play the audio file.
+                audio.play();
+                // Start the lyrics.
+                lrc.play();
+            } else {
+                // If the audio file is not loaded, wait for 100ms and try again.
+                setTimeout(playSong, 100);
+            }
         }
 
         /** On click, play the audio. */
