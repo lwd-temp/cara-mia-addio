@@ -6,12 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cara Mia Addio</title>
     <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.min.css">
     <script src="https://unpkg.com/lrc-file-parser@2.2.8/dist/lrc-file-parser.min.js"></script>
     <!--https://github.com/lyswhut/lrc-file-parser-->
 
     <!--Preload audio file.-->
     <audio id="audio" preload="auto" src="song.ogg"></audio>
 
+    <script>
+        const animateCSS = (element, animation, prefix = 'animate__') =>
+            // We create a Promise and return it
+            new Promise((resolve, reject) => {
+                const animationName = `${prefix}${animation}`;
+                const node = document.querySelector(element);
+
+                node.classList.add(`${prefix}animated`, animationName);
+
+                // When the animation ends, we clean the classes and resolve the Promise
+                function handleAnimationEnd(event) {
+                    event.stopPropagation();
+                    node.classList.remove(`${prefix}animated`, animationName);
+                    resolve('Animation ended');
+                }
+
+                node.addEventListener('animationend', handleAnimationEnd, { once: true });
+            });
+    </script>
     <!--Load lrc file with xhr.-->
     <script>
         var xhr = new XMLHttpRequest();
@@ -21,6 +41,8 @@
             window.lrc = new Lyric({
                 onPlay: function (line, text) { // Listening play event
                     console.log(line, text) // line is line number of current play
+                    // animate__fadeIn
+                    animateCSS('#lyric', 'fadeIn');
                     // text is lyric text of current play line
                     lyric.innerHTML = text;
                 },
@@ -41,7 +63,7 @@
 </head>
 
 <body>
-    <p id="lyric">Press to play.</p>
+    <p id="lyric" class="animate__animated animate__fadeIn">Press to play.</p>
     <style>
         /** Put the lyric to the center of the page. */
         #lyric {
