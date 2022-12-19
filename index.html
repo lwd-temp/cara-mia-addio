@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cara Mia Addio</title>
+    <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
+    <script src="https://unpkg.com/lrc-file-parser@2.2.8/dist/lrc-file-parser.min.js"></script>
+    <!--https://github.com/lyswhut/lrc-file-parser-->
+
+    <!--Preload audio file.-->
+    <audio id="audio" preload="auto" src="song.ogg"></audio>
+
+    <!--Load lrc file with xhr.-->
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'lyrics.lrc');
+        xhr.onload = function () {
+            /** Parse the lrc file content. */
+            window.lrc = new Lyric({
+                onPlay: function (line, text) { // Listening play event
+                    console.log(line, text) // line is line number of current play
+                    // text is lyric text of current play line
+                    lyric.innerHTML = text;
+                },
+                onSetLyric: function (lines) { // listening lyrics seting event
+                    console.log(lines) // lines is array of all lyric text
+                },
+                offset: 0, // offset time(ms), default is 150 ms
+                isRemoveBlankLine: false // is remove blank line, default is true
+            })
+            lrc.setLyric(xhr.responseText) // set lrc file content
+        };
+        // if failed, show error
+        xhr.onerror = function () {
+            window.lrc = "[00:00.00]Failed to load lyrics.";
+        };
+        xhr.send();
+    </script>
+</head>
+
+<body>
+    <p id="lyric">Press to play.</p>
+    <style>
+        /** Put the lyric to the center of the page. */
+        #lyric {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+        }
+
+        /** Make the lyric font size bigger. */
+        #lyric {
+            font-size: 2em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /** Black body background. */
+        body {
+            background-color: black;
+        }
+    </style>
+    <script>
+        /** Get the audio element. */
+        var audio = document.getElementById('audio');
+
+        /** Get the lyric element. */
+        var lyric = document.getElementById('lyric');
+
+        function playSong() {
+            audio.play();
+            window.lrc.play(0);
+        }
+
+        /** On click, play the audio. */
+        lyric.onclick = function () {
+            playSong();
+            // Disable the click event.
+            lyric.onclick = null;
+        };
+
+        /** If ends, restore click event. */
+        audio.onended = function () {
+            lyric.innerText = "Press to play.";
+            lyric.onclick = function () {
+                playSong();
+                // Disable the click event.
+                lyric.onclick = null;
+            };
+        };
+    </script>
+</body>
+
+</html>
